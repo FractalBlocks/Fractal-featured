@@ -1,6 +1,6 @@
 # Fractal Featured
 
-Super simple quickstart project for Fractal framework. Now we use :fire:[FuseBox](https://github.com/fuse-box/fuse-box):fire:! as bundle/loader system, which allows a blazingly fast develelopment and production building. All this offer a super simple development and production environment, you can count de dev + prod dependencies of this repo in one hand!! there are only 4, see package.json
+Fully featured starting project for Fractal framework with prerendering, SSR and i18n. Powered by :fire:[FuseBox](https://github.com/fuse-box/fuse-box):fire:! as bundle/loader system, which allows a blazingly fast develelopment and production building.
 
 So you are here, this how you can use this repo:
 
