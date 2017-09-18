@@ -20,7 +20,7 @@ export const strings: { [localeName: string]: Strings } = {}
 
 export async function getStrings (l: Locales): Promise<Strings> {
   if (!strings[l]) {
-    strings[l] = await import(`./i18n/locales/${l}.js`)
+    strings[l] = (await import(`i18n/locales/${l}`)).default
   }
   return strings[l]
 }

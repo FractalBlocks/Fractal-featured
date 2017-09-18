@@ -6,7 +6,7 @@ const {
   JSONPlugin,
   WebIndexPlugin,
   Sparky,
-  UglifyJSPlugin,
+  UglifyESPlugin,
   QuantumPlugin,
   EnvPlugin
 } = require('fuse-box')
@@ -43,7 +43,7 @@ Sparky.task('config', () => {
       }),
       isProduction && QuantumPlugin({
         treeshake: true,
-        uglify: true,
+        // uglify: true,
       }),
     ],
   })
@@ -54,19 +54,14 @@ Sparky.task('config', () => {
   // bundle app
   app = fuse
     .bundle('app')
-    // .split('i18n/locales/es', 'es > i18n/locales/es.ts')
-    .instructions('> [index.ts]')
-
-  i18n = fuse
-    .bundle('i18n/locales/en')
-    .instructions('i18n/locales/en.ts')
-
+    .split('i18n/locales/en.js', 'i18n/locales/en > i18n/locales/en.ts')
+    .split('i18n/locales/es.js', 'i18n/locales/es > i18n/locales/es.ts')
+    .instructions('> [index.ts] + [i18n/**/**.ts]')
 })
 
 // main task
 Sparky.task('default', ['clean', 'config'], () => {
   fuse.dev({ port: 3000 }, setupServer)
-  i18n.watch().hmr()
   vendor.watch().hmr()
   app.watch().hmr()
   return fuse.run()
