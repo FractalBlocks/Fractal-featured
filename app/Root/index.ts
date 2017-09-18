@@ -3,49 +3,76 @@ import {
   Inputs,
   Interfaces,
   StyleGroup,
-  absoluteCenter,
   assoc,
+  clickable,
   _,
 } from 'fractal-core'
 import { View, h } from 'fractal-core/interfaces/view'
-import { getStrings, getLocale, locales, setLocale } from '../i18n'
+import { getStrings, getLang, langs, setLang } from '../i18n'
+
+const tabs = [
+  ['Home', 'home'],
+  ['Blog', 'blog'],
+  ['About', 'about'],
+]
 
 export const name = 'Root'
 
 export const state = {
-  locale: getLocale(),
+  lang: getLang(),
+  tabName: 'Home',
 }
 
 export type S = typeof state
 
-export const inputs: Inputs<S> = ({ toAct, stateOf }) => ({
-  changeLocale: async selectedIndex => {
-    let locale = locales[selectedIndex]
-    setLocale(locale)
-    await toAct('SetLocale', locale)
+export const inputs: Inputs<S> = ({ ctx, toAct, stateOf, toIt, nest }) => ({
+  toRoute: async tabName => {
+    if (!ctx.components[ctx.id].components[tabName]) {
+      await nest(tabName, await import(tabName))
+    }
+    await toAct('SetTab', tabName)
+  },
+  changeLang: async selectedIndex => {
+    let lang = langs[selectedIndex]
+    setLang(lang)
+    await toAct('SetLang', lang)
   },
 })
 
 export const actions: Actions<S> = {
-  SetLocale: assoc('locale'),
+  SetLang: assoc('lang'),
+  SetTab: assoc('tabName'),
 }
 
-const view: View<S> = ({ ctx, ev }) => async s => {
+const view: View<S> = ({ ctx, ev, vw }) => async s => {
   let style = ctx.groups.style
-  let $ = await getStrings(s.locale)
+  let $ = await getStrings(s.lang)
 
   return h('div', {
     key: ctx.name,
     class: { [style.base]: true },
   }, [
-    h('div', {class: { [style.idiom]: true }}, [
-      h('label', {class: { [style.idiomLabel]: true }}, $.idiom),
-      h('select', {
-        class: { [style.idiomSelect]: true },
-        on: { change: ev('changeLocale', _, ['target', 'selectedIndex']) },
-      },
-        locales.map(l => h('option', l))
+    h('header', {class: { [style.header]: true }}, [
+      h('div', {class: { [style.title]: true }}, $.fractalFeatured),
+      h('div', {class: { [style.menu]: true }},
+        tabs.map(
+          t => h('div', {
+            class: { [style.menuItem]: true },
+            on: { click: ev('toRoute', t[0]) },
+          }, $[t[1]])
+        )
       ),
+      h('div', {class: { [style.lang]: true }}, [
+        h('select', {
+          class: { [style.langSelect]: true },
+          on: { change: ev('changeLang', _, ['target', 'selectedIndex']) },
+        },
+          langs.map(l => h('option', l))
+        ),
+      ]),
+    ]),
+    h('div', {class: { [style.container]: true }}, [
+      vw(s.tabName),
     ]),
   ])
 }
@@ -56,34 +83,50 @@ const style: StyleGroup = {
   base: {
     width: '100%',
     height: '100%',
+    fontFamily: '"Open sans", sans-serif',
     overflow: 'auto',
-    ...<any> absoluteCenter,
+    color: '#4D4D4D',
   },
-  button: {
-    width: '280px',
-    height: '70px',
-    margin: '20px',
-    fontSize: '38px',
-    borderRadius: '35px',
-    color: 'white',
-    backgroundColor: '#13A513',
-    textAlign: 'center',
-    transition: 'transform .4s, background .2s',
-    cursor: 'pointer',
-    userSelect: 'none',
-    ...<any> absoluteCenter,
-    '&:hover': {
-      color: 'white',
-      backgroundColor: 'purple',
-      border: '3px solid purple',
-      transform: 'perspective(1px) scale(1.1)',
+  header: {
+    height: '60px',
+    display: 'flex',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+  },
+  title: {
+    padding: '5px 0 5px 20px',
+    fontSize: '35px',
+    color: '#57A0BC',
+    ...clickable,
+  },
+  menu: {
+    marginLeft: 'auto',
+    display: 'flex',
+  },
+  menuItem: {
+    marginRight: '15px',
+    padding: '7px 10px',
+    ...clickable,
+    $nest: {
+      '&:hover': {
+        backgroundColor: '#DBD8D8',
+      },
     },
   },
-  buttonActive: {
-    color: 'purple',
-    backgroundColor: '#FBFBFB',
-    border: '3px solid #13A513',
+  lang: {
   },
+  langLabel: {
+    padding: '5px',
+  },
+  langSelect: {
+    margin: '5px 15px 5px 5px',
+    padding: '3px',
+    fontSize: '16px',
+    fontFamily: '"Open sans", sans-serif',
+    color: '#4D4D4D',
+    background: 'none',
+  },
+  container: {},
 }
 
 export const groups = { style }

@@ -6,7 +6,7 @@ import {
 } from 'fractal-core'
 import { View, h } from 'fractal-core/interfaces/view'
 
-export const name = 'About'
+export const name = 'Blog'
 
 export const state = {}
 
@@ -25,7 +25,7 @@ const view: View<S> = ({ ctx }) => s => {
     key: ctx.name,
     class: { [style.base]: true },
   }, [
-    h('div', {class: { [style.title]: true }}, 'About'),
+    <any> 'Blog',
   ])
 }
 

@@ -13,6 +13,7 @@ const {
 
 const express = require('express')
 const path = require('path')
+const fs = require('fs-jetpack')
 
 let fuse, app, vendor
 let isProduction = false
@@ -20,6 +21,20 @@ let isProduction = false
 const setupServer = server => {
   const app = server.httpServer.app
   app.use('/assets/', express.static(path.join(__dirname, 'assets')))
+}
+
+const splitLangs = bundle => {
+  let langFiles = fs.find('app/i18n/langs/', {
+    matching: '*.ts',
+  })
+  let langs = langFiles.map(f => {
+    let parts = f.split('/')
+    return parts[parts.length - 1].split('.')[0]
+  })
+  langs.forEach(l => {
+    bundle = bundle.split(`i18n/langs/${l}.js`, `langs/${l} > i18n/langs/${l}.ts`)
+  })
+  return bundle
 }
 
 Sparky.task('config', () => {
@@ -52,11 +67,11 @@ Sparky.task('config', () => {
   vendor = fuse.bundle('vendor').instructions('~ index.ts')
 
   // bundle app
-  app = fuse
-    .bundle('app')
-    .split('i18n/locales/en.js', 'i18n/locales/en > i18n/locales/en.ts')
-    .split('i18n/locales/es.js', 'i18n/locales/es > i18n/locales/es.ts')
-    .instructions('> [index.ts] + [i18n/**/**.ts]')
+  app = splitLangs(fuse.bundle('app'))
+    .split(`Root/Home.js`, `Home > Root/Home.ts`)
+    .split(`Root/About.js`, `About > Root/About.ts`)
+    .split(`Root/Blog/**`, `Blog > Root/Blog/index.ts`)
+    .instructions('> [index.ts] + [**/**.ts]')
 })
 
 // main task

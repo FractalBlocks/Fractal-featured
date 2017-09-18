@@ -1,3 +1,4 @@
+import { _ } from 'fractal-core'
 import './assets/icons-bundle.css'
 import './styles.css'
 import { runModule } from './module'
@@ -7,5 +8,7 @@ import './hmr'
 let DEV = !process.env.isProduction
 
 ;(async () => {
-  ;(window as any).app = await runModule(root, DEV)
+  let app = await runModule(root, DEV)
+  await app.moduleAPI.dispatch(['Root', 'toRoute', 'Home', _, 'context'])
+  ;(window as any).app = app
 })()
