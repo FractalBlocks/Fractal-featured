@@ -5,9 +5,10 @@ import {
   StyleGroup,
   absoluteCenter,
   assoc,
+  _,
 } from 'fractal-core'
 import { View, h } from 'fractal-core/interfaces/view'
-import { getStrings, getLocale, locales } from '../i18n'
+import { getStrings, getLocale, locales, setLocale } from '../i18n'
 
 export const name = 'Root'
 
@@ -18,9 +19,10 @@ export const state = {
 export type S = typeof state
 
 export const inputs: Inputs<S> = ({ toAct, stateOf }) => ({
-  changeLocale: async () => {
-    let s: S = stateOf()
-    toAct('SetLocale', await getStrings(s.locale))
+  changeLocale: async selectedIndex => {
+    let locale = locales[selectedIndex]
+    setLocale(locale)
+    await toAct('SetLocale', locale)
   },
 })
 
@@ -38,7 +40,10 @@ const view: View<S> = ({ ctx, ev }) => async s => {
   }, [
     h('div', {class: { [style.idiom]: true }}, [
       h('label', {class: { [style.idiomLabel]: true }}, $.idiom),
-      h('select', {class: { [style.idiomSelect]: true }},
+      h('select', {
+        class: { [style.idiomSelect]: true },
+        on: { change: ev('changeLocale', _, ['target', 'selectedIndex']) },
+      },
         locales.map(l => h('option', l))
       ),
     ]),

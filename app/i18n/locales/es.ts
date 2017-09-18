@@ -1,7 +1,7 @@
 import { Strings } from '../index'
 
-const en: Strings = {
+const es: Strings = {
   idiom: 'Idioma',
 }
 
-export default en
+export default es

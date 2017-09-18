@@ -1,8 +1,6 @@
-import en from './locale/en'
-
 export type Locales = 'en' | 'es'
 
-export const locales = ['en', 'es']
+export const locales: Locales[] = ['en', 'es']
 
 export interface Strings {
   idiom: string
@@ -18,13 +16,11 @@ export function getLocale () {
   return locale
 }
 
-export const strings: { [localeName: string]: Strings } = {
-  en,
-}
+export const strings: { [localeName: string]: Strings } = {}
 
 export async function getStrings (l: Locales): Promise<Strings> {
   if (!strings[l]) {
-    strings[l] = await import(`locale/${l}`)
+    strings[l] = await import(`./i18n/locales/${l}.js`)
   }
   return strings[l]
 }

@@ -13,7 +13,6 @@ const {
 
 const express = require('express')
 const path = require('path')
-const {spawn} = require('child_process')
 
 let fuse, app, vendor
 let isProduction = false
@@ -26,7 +25,7 @@ const setupServer = server => {
 Sparky.task('config', () => {
   fuse = FuseBox.init({
     homeDir: 'app/',
-    output: 'dist/$name.js',
+    output: 'dist/public/$name.js',
     hash: isProduction,
     tsConfig : 'tsconfig.json',
     experimentalFeatures: true,
@@ -53,19 +52,28 @@ Sparky.task('config', () => {
   vendor = fuse.bundle('vendor').instructions('~ index.ts')
 
   // bundle app
-  app = fuse.bundle('app').instructions('> [index.ts]')
+  app = fuse
+    .bundle('app')
+    // .split('i18n/locales/es', 'es > i18n/locales/es.ts')
+    .instructions('> [index.ts]')
+
+  i18n = fuse
+    .bundle('i18n/locales/en')
+    .instructions('i18n/locales/en.ts')
 
 })
 
 // main task
 Sparky.task('default', ['clean', 'config'], () => {
   fuse.dev({ port: 3000 }, setupServer)
+  i18n.watch().hmr()
+  vendor.watch().hmr()
   app.watch().hmr()
   return fuse.run()
 })
 
 // wipe it all
-Sparky.task('clean', () => Sparky.src('dist/*').clean('dist/'))
+Sparky.task('clean', () => Sparky.src('dist/public/*').clean('dist/public/'))
 // wipe it all from .fusebox - cache dir
 Sparky.task('clean-cache', () => Sparky.src('.fusebox/*').clean('.fusebox/'))
 
