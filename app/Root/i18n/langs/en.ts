@@ -2,7 +2,7 @@ import { Strings } from '../index'
 
 const en: Strings = {
   fractalFeatured: 'Fractal Featured',
-  home: 'Homes',
+  home: 'Home',
   blog: 'Blog',
   about: 'About',
 }
