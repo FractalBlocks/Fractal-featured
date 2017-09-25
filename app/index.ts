@@ -7,8 +7,14 @@ import './hmr'
 
 let DEV = !process.env.isProduction
 
+if (typeof window !== 'undefined') {
+  navigator.serviceWorker.register('service-worker.js')
+}
+
 ;(async () => {
   let app = await runModule(root, DEV)
   await app.moduleAPI.dispatch(['Root', 'toRoute', 'Home', _, 'context'])
-  ;(window as any).app = app
+  if (typeof window !== 'undefined') {
+    ;(window as any).app = app
+  }
 })()

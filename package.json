@@ -7,7 +7,8 @@
     "test": "karma start",
     "test:watch": "karma start --no-single-run --auto-watch",
     "posttest": "codecov -f coverage/*.json",
-    "start": "node fuse",
+    "start": "./node_modules/.bin/nodemon dist/server/index.js",
+    "dev": "node fuse",
     "dist": "node fuse dist",
     "bundle-icons": "svg-join -s assets/icons/*.svg -o assets -n icons-bundle && svgo --config=svgo.yml assets/icons-bundle.svg assets/icons-bundle.min.svg"
   },
@@ -22,11 +23,17 @@
   },
   "homepage": "https://github.com/fractalPlatform/Fractal-quickstart#readme",
   "dependencies": {
-    "fractal-core": "^3.3.3"
+    "@types/koa": "^2.0.39",
+    "fractal-core": "^3.3.3",
+    "koa": "^2.3.0",
+    "koa-mount": "^3.0.0",
+    "koa-router": "^7.2.1",
+    "koa-static": "^4.0.1"
   },
   "devDependencies": {
     "fs-jetpack": "^1.2.0",
     "fuse-box": "^2.2.31",
+    "nodemon": "^1.12.1",
     "svg-join": "^1.1.1",
     "svgo": "^0.7.2",
     "typescript": "^2.6.0-dev.20170916",

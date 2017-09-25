@@ -17,6 +17,8 @@
   },
   "files": [
     "app/index.ts",
+    "server/index.ts",
+    "app/service-worker.ts",
     "typings/index.d.ts"
   ],
   "include": [

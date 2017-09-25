@@ -6,9 +6,10 @@ import {
   assoc,
   clickable,
   _,
+  Components,
 } from 'fractal-core'
 import { View, h } from 'fractal-core/interfaces/view'
-import { getStrings, getLang, langs, setLang } from '../i18n'
+import { getStrings, getLang, langs, setLang } from './i18n'
 
 const tabs = [
   ['Home', 'home'],
@@ -18,9 +19,11 @@ const tabs = [
 
 export const name = 'Root'
 
+export const defs: Components = {}
+
 export const state = {
   lang: getLang(),
-  tabName: 'Home',
+  tabName: '',
 }
 
 export type S = typeof state
@@ -28,7 +31,9 @@ export type S = typeof state
 export const inputs: Inputs<S> = ({ ctx, toAct, stateOf, toIt, nest }) => ({
   toRoute: async tabName => {
     if (!ctx.components[ctx.id].components[tabName]) {
-      await nest(tabName, await import(tabName))
+      let tabComp = await import(tabName)
+      ctx.components[ctx.id].def.defs[tabName] = tabComp
+      await nest(tabName, tabComp)
     }
     await toAct('SetTab', tabName)
   },
@@ -71,9 +76,9 @@ const view: View<S> = ({ ctx, ev, vw }) => async s => {
         ),
       ]),
     ]),
-    h('div', {class: { [style.container]: true }}, [
+    h('div', {class: { [style.container]: true }}, s.tabName ? [
       vw(s.tabName),
-    ]),
+    ]: []),
   ])
 }
 
@@ -97,6 +102,7 @@ const style: StyleGroup = {
     padding: '5px 0 5px 20px',
     fontSize: '35px',
     color: '#57A0BC',
+    fontWeight: 'bold',
     ...clickable,
   },
   menu: {
@@ -125,8 +131,11 @@ const style: StyleGroup = {
     fontFamily: '"Open sans", sans-serif',
     color: '#4D4D4D',
     background: 'none',
+    outline: 'none',
   },
-  container: {},
+  container: {
+    padding: '20px 10px 10px 35px',
+  },
 }
 
 export const groups = { style }

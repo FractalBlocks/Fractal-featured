@@ -34,5 +34,7 @@ We strongly recommend [Visual Studio Code](https://code.visualstudio.com/) and u
 
 ## TODOs
 
+- Setup prerendering
+- Support for Windows (There are many bugs on Windows related with fusebox and paths)
 - Integrate testing suite
 - Integrate Code coverage
