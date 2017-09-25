@@ -21,9 +21,6 @@
     "app/service-worker.ts",
     "typings/index.d.ts"
   ],
-  "include": [
-    "app/**/*.spec.ts"
-  ],
   "exclude": [
     "node_modules"
   ],

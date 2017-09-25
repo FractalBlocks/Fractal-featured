@@ -15,13 +15,11 @@ const express = require('express')
 const path = require('path')
 const fs = require('fs-jetpack')
 
-const bundles = [
+const splitBundles = [
   ['Root/Home.js', 'Home', 'Root/Home.ts'],
   ['Root/About.js', 'About', 'Root/About.ts'],
   ['Root/Blog/**', 'Blog', 'Root/Blog/index.ts'],
 ]
-
-let bundleFiles = bundles.map(b => `${b[1]}.js`)
 
 let fuse, fuseSW, fuseServer, app, vendor, SW, server
 let isProduction = false
@@ -40,16 +38,10 @@ let langs = langFiles.map(f => {
   return parts[parts.length - 1].split('.')[0]
 })
 
-bundleFiles = bundleFiles.concat(langs.map(l => `langs/${l}.js`))
-
-// write bundles.json
-const bundleListJSON = bundleFiles.reduce(
-  (a, name, idx) => a + `"${name}"${idx !== bundleFiles.length - 1 ? ',' : ''}`
-, '')
-fs.write('app/bundles.json', `[${bundleListJSON}]`)
+// bundleFiles = bundleFiles.concat(langs.map(l => `langs/${l}.js`))
 
 const splitAppBundles = (bundle) => {
-  bundles.forEach(([path, name, file]) => {
+  splitBundles.forEach(([path, name, file]) => {
     bundle = bundle.split(path, `${name} > ${file}`)
   })
   return bundle
@@ -89,6 +81,24 @@ Sparky.task('config', () => {
     ],
   })
 
+  let bundleFiles = [
+    '/',
+    'vendor.js',
+    'app.js',
+    ...isProduction ? [
+      'api.js',
+      ...splitBundles.map(b => `${b[1]}.js`),
+    ] : [],
+    'https://fonts.googleapis.com/css?family=Open+Sans',
+    'https://fonts.gstatic.com/s/opensans/v14/cJZKeOuBrn4kERxqtaUH3VtXRa8TVwTICgirnJhmVJw.woff2',
+  ]
+
+  // write bundles.json
+  const bundleListJSON = bundleFiles.reduce(
+    (a, name, idx) => a + `"${name}"${idx !== bundleFiles.length - 1 ? ',' : ''}`
+  , '')
+  fs.write('app/bundles.json', `[${bundleListJSON}]`)
+
   // vendor
   vendor = fuse.bundle('vendor').instructions('~ index.ts')
 
@@ -126,18 +136,18 @@ Sparky.task('service-worker-bundle', () => {
     tsConfig : 'tsconfig.json',
     experimentalFeatures: true,
     useTypescriptCompiler: true,
-    sourceMaps: !isProduction,
+    sourceMaps: false,
     cache: !isProduction,
     plugins: [
       JSONPlugin(),
       EnvPlugin({ isProduction }),
-      isProduction && QuantumPlugin({
+      QuantumPlugin({
         target: 'browser',
         treeshake: true,
         replaceTypeOf: false,
         bakeApiIntoBundle: 'service-worker',
         containedAPI : true,
-        uglify: true,
+        uglify: false,
       }),
     ],
   })
