@@ -37,11 +37,13 @@ function precache() {
 function fromCache(request) {
   return caches.open(CACHE).then((cache) => {
     return cache.match(request).then(<any> ((response) => {
-      return response || fetch(request).then(function(response) {
-        console.log(request.status)
+      return response || fetch(request).then(<any> ((response) => {
+        if (response.status !== 200) {
+          return Promise.reject('not found')
+        }
         cache.put(request, response.clone())
         return response
-      })
+      }))
     }))
   })
 }
