@@ -1,10 +1,7 @@
 # Project specific stuff
 dist/
+app/bundles.json
 .fusebox
-
-coverage/
-reports/
-webpack-stats.json
 
 icons-bundle.css
 icons-bundle.svg
