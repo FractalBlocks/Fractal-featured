@@ -17,44 +17,48 @@ const tabs = [
   ['About', 'about'],
 ]
 
-export const name = 'Root'
-
 export const defs: Components = {}
 
 export const state = {
   lang: getLang(),
   tabName: '',
+  _nest: {},
+  _compUpdated: false,
 }
 
 export type S = typeof state
 
-export const inputs: Inputs<S> = ({ ctx, toAct, stateOf, toIt, nest }) => ({
+export const inputs: Inputs = F => ({
   toRoute: async tabName => {
-    if (!ctx.components[ctx.id].components[tabName]) {
-      let tabComp = await import(tabName)
-      ctx.components[ctx.id].def.defs[tabName] = tabComp
-      await nest(tabName, tabComp)
+    let s: S = F.stateOf()
+    if (!s._nest[tabName]) {
+      await F.toAct('AddTab', [tabName, await import(tabName)])
     }
-    await toAct('SetTab', tabName)
+    await F.toAct('SetTab', tabName)
   },
   changeLang: async selectedIndex => {
     let lang = langs[selectedIndex]
     setLang(lang)
-    await toAct('SetLang', lang)
+    await F.toAct('SetLang', lang)
   },
 })
 
 export const actions: Actions<S> = {
   SetLang: assoc('lang'),
   SetTab: assoc('tabName'),
+  AddTab: ([name, comp]) => s => {
+    s._nest[name] = comp
+    s._compUpdated = true
+    return s
+  },
 }
 
-const view: View<S> = ({ ctx, ev, vw }) => async s => {
-  let style = ctx.groups.style
+const view: View<S> = F => async s => {
+  let style = F.ctx.groups.style
   let $ = await getStrings(s.lang)
 
   return h('div', {
-    key: ctx.name,
+    key: F.ctx.name,
     class: { [style.base]: true },
   }, [
     h('header', {class: { [style.header]: true }}, [
@@ -63,21 +67,21 @@ const view: View<S> = ({ ctx, ev, vw }) => async s => {
         tabs.map(
           t => h('div', {
             class: { [style.menuItem]: true },
-            on: { click: ev('toRoute', t[0]) },
+            on: { click: F.ev('toRoute', t[0]) },
           }, $[t[1]])
         )
       ),
       h('div', {class: { [style.lang]: true }}, [
         h('select', {
           class: { [style.langSelect]: true },
-          on: { change: ev('changeLang', _, ['target', 'selectedIndex']) },
+          on: { change: F.ev('changeLang', _, ['target', 'selectedIndex']) },
         },
           langs.map(l => h('option', l))
         ),
       ]),
     ]),
     h('div', {class: { [style.container]: true }}, s.tabName ? [
-      vw(s.tabName),
+      F.vw(s.tabName),
     ]: []),
   ])
 }

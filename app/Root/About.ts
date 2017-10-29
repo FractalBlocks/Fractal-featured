@@ -6,23 +6,21 @@ import {
 } from 'fractal-core'
 import { View, h } from 'fractal-core/interfaces/view'
 
-export const name = 'About'
-
 export const state = {}
 
 export type S = typeof state
 
-export const inputs: Inputs<S> = ctx => ({
+export const inputs: Inputs = F => ({
 })
 
 export const actions: Actions<S> = {
 }
 
-const view: View<S> = ({ ctx }) => s => {
-  let style = ctx.groups.style
+const view: View<S> = F => s => {
+  let style = F.ctx.groups.style
 
   return h('div', {
-    key: ctx.name,
+    key: F.ctx.name,
     class: { [style.base]: true },
   }, [
     h('div', {class: { [style.title]: true }}, 'About'),
