@@ -24,7 +24,7 @@
   "homepage": "https://github.com/fractalPlatform/Fractal-quickstart#readme",
   "dependencies": {
     "@types/koa": "^2.0.39",
-    "fractal-core": "^4.0.4",
+    "fractal-core": "^4.1.9",
     "koa": "^2.3.0",
     "koa-mount": "^3.0.0",
     "koa-router": "^7.2.1",
@@ -32,7 +32,7 @@
   },
   "devDependencies": {
     "fs-jetpack": "^1.2.0",
-    "fuse-box": "^2.2.31",
+    "fuse-box": "^2.4.0",
     "nodemon": "^1.12.1",
     "svg-join": "^1.1.1",
     "svgo": "^0.7.2",
