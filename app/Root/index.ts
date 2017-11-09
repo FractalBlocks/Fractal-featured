@@ -81,7 +81,7 @@ const view: View<S> = F => async s => {
       ]),
     ]),
     h('div', {class: { [style.container]: true }}, s.tabName ? [
-      F.vw(s.tabName),
+      await F.vw(s.tabName),
     ]: []),
   ])
 }

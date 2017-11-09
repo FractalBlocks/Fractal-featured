@@ -12,13 +12,13 @@ export const state = {}
 
 export type S = typeof state
 
-export const inputs: Inputs<S> = ctx => ({
+export const inputs: Inputs = ctx => ({
 })
 
 export const actions: Actions<S> = {
 }
 
-const view: View<S> = ({ ctx }) => s => {
+const view: View<S> = ({ ctx }) => async s => {
   let style = ctx.groups.style
 
   return h('div', {

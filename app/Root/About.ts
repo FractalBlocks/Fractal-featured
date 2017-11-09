@@ -16,7 +16,7 @@ export const inputs: Inputs = F => ({
 export const actions: Actions<S> = {
 }
 
-const view: View<S> = F => s => {
+const view: View<S> = F => async s => {
   let style = F.ctx.groups.style
 
   return h('div', {
