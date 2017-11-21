@@ -6,8 +6,6 @@ import {
 } from 'fractal-core'
 import { View, h } from 'fractal-core/interfaces/view'
 
-export const name = 'Blog'
-
 export const state = {}
 
 export type S = typeof state
