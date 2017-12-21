@@ -14,6 +14,7 @@ const {
 const express = require('express')
 const path = require('path')
 const fs = require('fs-jetpack')
+const TypeHelper = require('fuse-box-typechecker').TypeHelper
 
 const splitBundles = [
   ['Root/Home.js', 'Home', 'Root/Home.ts'],
@@ -110,8 +111,15 @@ Sparky.task('config', () => {
 // main task
 Sparky.task('default', ['clean', 'config', 'copy-files', 'service-worker-bundle', 'server-bundle', 'run-server'], () => {
   fuse.dev({ port: 3001 }, setupServer)
-  vendor.watch().hmr()
-  app.watch().hmr()
+  let typeHelper = TypeHelper({
+    tsConfig: './tsconfig.json',
+    basePath:'.',
+    name: 'App typechecker',
+  })
+  app.watch().hmr().completed(proc => {
+    console.log(`\x1b[36m%s\x1b[0m`, `client bundled`)
+    typeHelper.runSync()
+  })
   SW.watch()
   server.watch()
 
