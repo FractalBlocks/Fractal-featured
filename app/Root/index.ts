@@ -29,6 +29,11 @@ export const state = {
 export type S = typeof state
 
 export const inputs: Inputs = F => ({
+  init: async () => {
+    if (typeof window !== 'undefined') {
+      await F.toIt('toRoute', (window as any).ssrView)
+    }
+  },
   toRoute: async tabName => {
     let s: S = F.stateOf()
     if (!s._nest[tabName]) {

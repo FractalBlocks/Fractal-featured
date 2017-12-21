@@ -13,7 +13,6 @@ if (typeof window !== 'undefined') {
 
 ;(async () => {
   let app = await runModule(root, DEV)
-  await app.moduleAPI.dispatchEv({}, ['Root', 'toRoute', 'Home'])
   if (typeof window !== 'undefined') {
     ;(window as any).app = app
   }

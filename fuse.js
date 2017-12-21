@@ -57,6 +57,7 @@ const splitLangs = bundle => {
 
 Sparky.task('config', () => {
   fuse = FuseBox.init({
+    target: 'browser@esnext',
     homeDir: 'app/',
     output: 'dist/public/$name.js',
     tsConfig : 'tsconfig.json',
@@ -166,6 +167,7 @@ Sparky.task('service-worker-bundle', () => {
 
 Sparky.task('server-bundle', () => {
   fuseServer = FuseBox.init({
+    target: 'server@esnext',
     homeDir: 'server/',
     output: 'dist/server/$name.js',
     tsConfig : 'tsconfig.json',
