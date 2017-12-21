@@ -37,7 +37,7 @@ export const inputs: Inputs = F => ({
   toRoute: async tabName => {
     let s: S = F.stateOf()
     if (!s._nest[tabName]) {
-      await F.toAct('AddTab', [tabName, await import(tabName)])
+      await F.toAct('AddTab', tabName)
     }
     await F.toAct('SetTab', tabName)
   },
@@ -51,8 +51,8 @@ export const inputs: Inputs = F => ({
 export const actions: Actions<S> = {
   SetLang: assoc('lang'),
   SetTab: assoc('tabName'),
-  AddTab: ([name, comp]) => s => {
-    s._nest[name] = comp
+  AddTab: name => async s => {
+    s._nest[name] = await import(typeof window !== 'undefined' ? name : `./app/Root/${name}`)
     s._compUpdated = true
     return s
   },

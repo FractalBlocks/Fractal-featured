@@ -23,7 +23,7 @@ export const strings: { [LangName: string]: Strings } = {}
 
 export async function getStrings (l: Langs): Promise<Strings> {
   if (!strings[l]) {
-    strings[l] = (await import(`langs/${l}`)).default
+    strings[l] = (await import(typeof window !== 'undefined' ? `langs/${l}` : `./app/Root/i18n/langs/${l}`)).default
   }
   return strings[l]
 }

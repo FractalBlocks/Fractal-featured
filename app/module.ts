@@ -8,7 +8,7 @@ import {
 import { viewHandler } from 'fractal-core/interfaces/view'
 import { styleHandler } from 'fractal-core/groups/style'
 
-export const runModule: RunModule = (root: Component<any>, DEV: boolean, viewCb?) => run({
+export const runModule: RunModule = (root: Component<any>, DEV: boolean, options?, viewCb?) => run({
   root,
   log: DEV,
   record: DEV,
@@ -18,5 +18,6 @@ export const runModule: RunModule = (root: Component<any>, DEV: boolean, viewCb?
   interfaces: {
     view: viewHandler('#app', viewCb),
   },
-...DEV ? logFns : {},
+  ...DEV ? logFns : {},
+  ...options,
 })

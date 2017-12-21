@@ -32,8 +32,14 @@ All icons are in assets/icons and are svg files with dash separated words. If yo
 
 We strongly recommend [Visual Studio Code](https://code.visualstudio.com/) and use [fractal-vscode-extension](https://marketplace.visualstudio.com/items?itemName=carloslfu.fractal-vscode-extension) that provide many useful code snippets
 
+## Features / Goals
+
+- Should be a SPA
+- Should have prerendring
+- Should have SSR
+
 ## TODOs
 
-- Setup prerendering
+- Setup SSR
 - Support for Windows (There are many bugs on Windows related with fusebox and paths)
 - Integrate testing suite

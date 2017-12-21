@@ -195,7 +195,39 @@ Sparky.task('server-bundle', () => {
 // prod build
 Sparky.task('set-production-env', () => isProduction = true)
 
-Sparky.task('dist', ['clean', 'clean-cache', 'set-production-env', 'config', 'copy-files', 'service-worker-bundle', 'server-bundle', 'run-server'], () => {
+Sparky.task('aot', () => {
+  let fuse = FuseBox.init({
+    homeDir: '.',
+    output: 'dist/public/$name.js',
+    tsConfig : './aot/tsconfig.json',
+    experimentalFeatures: true,
+    useTypescriptCompiler: true,
+    sourceMaps: false,
+    cache: false,
+    plugins: [
+      EnvPlugin({ ENV: 'production' }),
+    ],
+  })
+
+  fuse.bundle('aot').instructions('> aot/index.ts +  app/**/**.ts')
+
+  fuse.run().then(() => {
+    console.log('Running AOT compilation ...')
+    const spawn = require( 'child_process' ).spawn
+    const serverCmd = spawn( 'node', [ 'dist/public/aot' ] )
+    serverCmd.stdout.on( 'data', data => {
+      console.log( `stdout: ${data}` )
+    })
+    serverCmd.stderr.on( 'data', data => {
+      console.log( `stderr: ${data}` )
+    })
+    serverCmd.on( 'close', code => {
+      console.log( `child process exited with code ${code}` )
+    })
+  })
+})
+
+Sparky.task('dist', ['clean', 'clean-cache', 'set-production-env', 'config', 'copy-files', 'service-worker-bundle', 'server-bundle', 'aot', 'run-server'], () => {
   fuse.dev({ port: 3001 }, setupServer)
   fuseServer.run()
   fuseSW.run()
