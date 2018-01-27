@@ -43,3 +43,4 @@ We strongly recommend [Visual Studio Code](https://code.visualstudio.com/) and u
 - Setup SSR
 - Support for Windows (There are many bugs on Windows related with fusebox and paths)
 - Integrate testing suite
+- Broken build (Update to FuseBox 3+, auto-split)
