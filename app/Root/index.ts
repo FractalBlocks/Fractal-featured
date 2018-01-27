@@ -52,7 +52,7 @@ export const actions: Actions<S> = {
   SetLang: assoc('lang'),
   SetTab: assoc('tabName'),
   AddTab: name => async s => {
-    s._nest[name] = await import(`./${name}`)
+    s._nest[name] = await import(`./Root/${name}`)
     s._compUpdated = true
     return s
   },

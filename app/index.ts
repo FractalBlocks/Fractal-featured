@@ -1,4 +1,3 @@
-import { _ } from 'fractal-core'
 import './assets/icons-bundle.css'
 import './styles.css'
 import { runModule } from './module'
@@ -8,7 +7,7 @@ import './hmr'
 let DEV = !process.env.isProduction
 
 if (typeof window !== 'undefined') {
-  navigator.serviceWorker.register('service-worker.js')
+  // navigator.serviceWorker.register('service-worker.js') // temporary disabled
 }
 
 ;(async () => {

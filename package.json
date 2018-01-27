@@ -32,7 +32,7 @@
   },
   "devDependencies": {
     "fs-jetpack": "^1.2.0",
-    "fuse-box": "^2.4.0",
+    "fuse-box": "^3.1.0-next.17",
     "fuse-box-typechecker": "^2.6.4",
     "nodemon": "^1.12.1",
     "svg-join": "^1.1.1",

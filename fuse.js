@@ -41,19 +41,20 @@ let langs = langFiles.map(f => {
 
 // bundleFiles = bundleFiles.concat(langs.map(l => `langs/${l}.js`))
 
-const splitAppBundles = (bundle) => {
-  splitBundles.forEach(([path, name, file]) => {
-    bundle = bundle.split(path, `${name} > ${file}`)
-  })
-  return bundle
-}
+// DEPRECATED beacuse of FuseBox 3.0 auto split
+// const splitAppBundles = (bundle) => {
+//   splitBundles.forEach(([path, name, file]) => {
+//     bundle = bundle.split(path, `${name} > ${file}`)
+//   })
+//   return bundle
+// }
 
-const splitLangs = bundle => {
-  langs.forEach(l => {
-    bundle = bundle.split(`Root/i18n/langs/${l}.js`, `langs/${l} > Root/i18n/langs/${l}.ts`)
-  })
-  return bundle
-}
+// const splitLangs = bundle => {
+//   langs.forEach(l => {
+//     bundle = bundle.split(`Root/i18n/langs/${l}.js`, `langs/${l} > Root/i18n/langs/${l}.ts`)
+//   })
+//   return bundle
+// }
 
 Sparky.task('config', () => {
   fuse = FuseBox.init({
@@ -105,7 +106,7 @@ Sparky.task('config', () => {
   vendor = fuse.bundle('vendor').instructions('~ index.ts')
 
   // bundle app
-  app = splitAppBundles(splitLangs(fuse.bundle('app')))
+  app = fuse.bundle('app')
     .instructions('> [index.ts] + [**/**.ts]')
 })
 
