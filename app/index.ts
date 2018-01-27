@@ -1,7 +1,7 @@
 import './assets/icons-bundle.css'
 import './styles.css'
 import { runModule } from './module'
-import * as root from './Root'
+import * as Root from './Root'
 import './hmr'
 
 let DEV = !process.env.isProduction
@@ -11,7 +11,7 @@ if (typeof window !== 'undefined') {
 }
 
 ;(async () => {
-  let app = await runModule(root, DEV)
+  let app = await runModule(Root, DEV)
   if (typeof window !== 'undefined') {
     ;(window as any).app = app
   }
