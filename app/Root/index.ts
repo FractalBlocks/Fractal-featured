@@ -31,7 +31,7 @@ export type S = typeof state
 export const inputs: Inputs = F => ({
   init: async () => {
     if (typeof window !== 'undefined') {
-      await F.toIt('toRoute', (window as any).ssrView)
+      await F.toIt('toRoute', (window as any).ssrView || 'Home')
     }
   },
   toRoute: async tabName => {
@@ -52,7 +52,7 @@ export const actions: Actions<S> = {
   SetLang: assoc('lang'),
   SetTab: assoc('tabName'),
   AddTab: name => async s => {
-    s._nest[name] = await import(typeof window !== 'undefined' ? name : `./app/Root/${name}`)
+    s._nest[name] = await import(`./${name}`)
     s._compUpdated = true
     return s
   },
