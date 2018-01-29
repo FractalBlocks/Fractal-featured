@@ -6,7 +6,6 @@ import {
   assoc,
   clickable,
   _,
-  Components,
 } from 'fractal-core'
 import { View, h } from 'fractal-core/interfaces/view'
 import { getStrings, getLang, langs, setLang } from './i18n'
@@ -17,7 +16,11 @@ const tabs = [
   ['About', 'about'],
 ]
 
-export const defs: Components = {}
+const getTab = async (name: string) => name === 'Home'
+  ? await import('./Home')
+  : name === 'Blog'
+  ? await import('./Blog')
+  : await import('./About')
 
 export const state = {
   lang: getLang(),
@@ -52,7 +55,7 @@ export const actions: Actions<S> = {
   SetLang: assoc('lang'),
   SetTab: assoc('tabName'),
   AddTab: name => async s => {
-    s._nest[name] = await import(`./Root/${name}`)
+    s._nest[name] = await getTab(name)
     s._compUpdated = true
     return s
   },
@@ -72,14 +75,14 @@ const view: View<S> = F => async s => {
         tabs.map(
           t => h('div', {
             class: { [style.menuItem]: true },
-            on: { click: F.ev('toRoute', t[0]) },
+            on: { click: F.in('toRoute', t[0]) },
           }, $[t[1]])
         )
       ),
       h('div', {class: { [style.lang]: true }}, [
         h('select', {
           class: { [style.langSelect]: true },
-          on: { change: F.ev('changeLang', _, ['target', 'selectedIndex']) },
+          on: { change: F.in('changeLang', _, ['target', 'selectedIndex']) },
         },
           langs.map(l => h('option', l))
         ),

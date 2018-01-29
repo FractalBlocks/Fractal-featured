@@ -16,12 +16,6 @@ const path = require('path')
 const fs = require('fs-jetpack')
 const TypeHelper = require('fuse-box-typechecker').TypeHelper
 
-const splitBundles = [
-  ['Root/Home.js', 'Home', 'Root/Home.ts'],
-  ['Root/About.js', 'About', 'Root/About.ts'],
-  ['Root/Blog/**', 'Blog', 'Root/Blog/index.ts'],
-]
-
 let fuse, fuseSW, fuseServer, app, vendor, SW, server
 let isProduction = false
 
@@ -30,36 +24,10 @@ const setupServer = server => {
   app.use('/assets/', express.static(path.join(__dirname, 'assets')))
 }
 
-let langFiles = fs.find('app/Root/i18n/langs/', {
-  matching: '*.ts',
-})
-
-let langs = langFiles.map(f => {
-  let parts = f.split('/')
-  return parts[parts.length - 1].split('.')[0]
-})
-
-// bundleFiles = bundleFiles.concat(langs.map(l => `langs/${l}.js`))
-
-// DEPRECATED beacuse of FuseBox 3.0 auto split
-// const splitAppBundles = (bundle) => {
-//   splitBundles.forEach(([path, name, file]) => {
-//     bundle = bundle.split(path, `${name} > ${file}`)
-//   })
-//   return bundle
-// }
-
-// const splitLangs = bundle => {
-//   langs.forEach(l => {
-//     bundle = bundle.split(`Root/i18n/langs/${l}.js`, `langs/${l} > Root/i18n/langs/${l}.ts`)
-//   })
-//   return bundle
-// }
-
 Sparky.task('config', () => {
   fuse = FuseBox.init({
     target: 'browser@esnext',
-    homeDir: 'app/',
+    homeDir: '.',
     output: 'dist/public/$name.js',
     tsConfig : 'tsconfig.json',
     experimentalFeatures: true,
@@ -84,30 +52,13 @@ Sparky.task('config', () => {
     ],
   })
 
-  let bundleFiles = [
-    '/',
-    'vendor.js',
-    'app.js',
-    ...isProduction ? [
-      'api.js',
-      ...splitBundles.map(b => `${b[1]}.js`),
-    ] : [],
-    'https://fonts.googleapis.com/css?family=Open+Sans',
-    'https://fonts.gstatic.com/s/opensans/v14/cJZKeOuBrn4kERxqtaUH3VtXRa8TVwTICgirnJhmVJw.woff2',
-  ]
-
-  // write bundles.json
-  const bundleListJSON = bundleFiles.reduce(
-    (a, name, idx) => a + `"${name}"${idx !== bundleFiles.length - 1 ? ',' : ''}`
-  , '')
-  fs.write('app/bundles.json', `[${bundleListJSON}]`)
-
   // vendor
-  vendor = fuse.bundle('vendor').instructions('~ index.ts')
+  vendor = fuse.bundle('vendor').instructions('~ app/index.ts')
 
   // bundle app
   app = fuse.bundle('app')
-    .instructions('> [index.ts] + [**/**.ts]')
+    // .splitConfig({ browser: '/static/bundles/', server : 'dist/public/', dest: 'bundles/' })
+    .instructions('> [app/index.ts] + [app/**/**.ts]')
 })
 
 // main task
@@ -139,9 +90,10 @@ Sparky.task('copy-files', () => {
   fs.copy('app/assets', 'dist/public/assets', { overwrite: true })
 })
 
+// Outdated! (TODO)
 Sparky.task('service-worker-bundle', () => {
   fuseSW = FuseBox.init({
-    homeDir: 'app/',
+    homeDir: '.',
     output: 'dist/public/$name.js',
     tsConfig : 'tsconfig.json',
     experimentalFeatures: true,
@@ -163,13 +115,13 @@ Sparky.task('service-worker-bundle', () => {
   })
   SW = fuseSW
     .bundle('service-worker')
-    .instructions('>[service-worker.ts]')
+    .instructions('>[app/service-worker.ts]')
 })
 
 Sparky.task('server-bundle', () => {
   fuseServer = FuseBox.init({
     target: 'server@esnext',
-    homeDir: 'server/',
+    homeDir: '.',
     output: 'dist/server/$name.js',
     tsConfig : 'tsconfig.json',
     experimentalFeatures: true,
@@ -190,7 +142,7 @@ Sparky.task('server-bundle', () => {
   })
   server = fuseServer
     .bundle('index')
-    .instructions('>[index.ts]')
+    .instructions('>[server/index.ts]')
 })
 
 // prod build
@@ -210,7 +162,7 @@ Sparky.task('aot', () => {
     ],
   })
 
-  fuse.bundle('aot').instructions('> aot/index.ts +  app/**/**.ts')
+  fuse.bundle('aot').instructions('> aot/index.ts')
 
   fuse.run().then(() => {
     console.log('Running AOT compilation ...')
@@ -228,10 +180,9 @@ Sparky.task('aot', () => {
   })
 })
 
-Sparky.task('dist', ['clean', 'clean-cache', 'set-production-env', 'config', 'copy-files', 'service-worker-bundle', 'server-bundle', 'aot', 'run-server'], () => {
+Sparky.task('dist', ['clean', 'clean-cache', 'set-production-env', 'config', 'copy-files', 'server-bundle', 'run-server'], () => {
   fuse.dev({ port: 3001 }, setupServer)
   fuseServer.run()
-  fuseSW.run()
   return fuse.run()
 })
 

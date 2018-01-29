@@ -2,6 +2,10 @@ export type Langs = 'en' | 'es'
 
 export const langs: Langs[] = ['en', 'es']
 
+const getLangBundle = async (l: string) => l == 'en'
+  ? (await import('./langs/en')).default
+  : (await import('./langs/es')).default
+
 export interface Strings {
   fractalFeatured: string
   home: string
@@ -23,7 +27,7 @@ export const strings: { [LangName: string]: Strings } = {}
 
 export async function getStrings (l: Langs): Promise<Strings> {
   if (!strings[l]) {
-    strings[l] = (await import(`./Root/i18n/langs/${l}`)).default
+    strings[l] = await getLangBundle(l)
   }
   return strings[l]
 }
