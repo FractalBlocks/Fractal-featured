@@ -69,12 +69,12 @@ Sparky.task('default', ['clean', 'config', 'copy-files', 'service-worker-bundle'
     basePath:'.',
     name: 'App typechecker',
   })
-  app.watch().hmr().completed(proc => {
+  app.watch('app/**/*.ts').hmr().completed(proc => {
     console.log(`\x1b[36m%s\x1b[0m`, `client bundled`)
     typeHelper.runSync()
   })
-  SW.watch()
-  server.watch()
+  SW.watch('app/**/*.ts')
+  server.watch('server/**/*.ts')
 
   fuseServer.run()
   fuseSW.run()
