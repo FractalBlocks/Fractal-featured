@@ -34,7 +34,7 @@ export type S = typeof state
 export const inputs: Inputs = F => ({
   init: async () => {
     if (typeof window !== 'undefined') {
-      await F.toIt('toRoute', (window as any).ssrView || 'Home')
+      await F.toIn('toRoute', (window as any).ssrView || 'Home')
     }
   },
   toRoute: async tabName => {
